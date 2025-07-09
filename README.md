@@ -1,15 +1,16 @@
- # CloudWatch Metric Streams Lambda transformation
+# CloudWatch Metric Streams Lambda transformation
 
 ## About The Project
 This Lambda function can be used as a Kinesis Firehose transformation function, to enrich the metrics from CloudWatch Metric Streams with AWS resource tags.
 
-- Accepts Kinesis Firehose events with metric data in [OTLP v0.7, size-delimited format](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-metric-streams-formats-opentelemetry.html)
+- Accepts Kinesis Firehose events with metric data in [OTLP v1.0, size-delimited format](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-metric-streams-formats-opentelemetry-100.html)
 - Obtains AWS resource information through the [AWS tagging API](https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/overview.html) and related APIs (API Gateway, EC2...)
+- Supports a map of tag keys that will be copied to metrics; skipping the rest
 - Associates CloudWatch metrics with particular resources and enriches the metric labels with resource tags, based on the [Yet Another CloudWatch Exporter](https://github.com/nerdswords/yet-another-cloudwatch-exporter) library
-- Returns Kinesis Firehose response with transformed record in OTLP v0.7, size-delimited format, for further processing and exporting to Coralogix (or other) destination by the Kinesis stream
+- Returns Kinesis Firehose response with transformed record in OTLP v1.0, size-delimited format, for further processing and exporting to Chronopshere (or other) destination by the Kinesis stream
 
 ### Installation and usage
-1. Download the `bootstrap.zip` file from the [releases](https://github.com/coralogix/cloudwatch-metric-streams-lambda-transformation/releases) page. Unless instructed otherwise, we recommend downloading the latest release. Alterantively, you can test, lint and build the zipped Lambda function by yourself by running `make all`.
+1. Download the `bootstrap.zip` file from the [releases](https://github.com/UrbanCompass/cloudwatch-metric-streams-lambda-transformation/releases) page. Unless instructed otherwise, we recommend downloading the latest release. Alternatively, you can test, lint and build the zipped Lambda function by yourself by running `make all`.
 2. Create a new AWS Lambda function in your designated region with the following parameters:
     - Runtime: `Custom runtime on Amazon Linux 2`
     - Handler: `bootstrap`
