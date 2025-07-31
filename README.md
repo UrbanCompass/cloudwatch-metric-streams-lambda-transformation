@@ -95,15 +95,17 @@ For more information on setting up multi-account CloudWatch Metric Streams, see 
 
 Once metrics are being streamed from multiple accounts, the Lambda function needs to be configured to obtain tags from resources in these accounts as well.
 AWS has a concept of [cross-account observability](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html), which allows a role in one account to assume a role in another account. This can be used to obtain tags from resources in multiple accounts.
-To enable the Lambda function to obtain tags from resources in multiple accounts, set the `AWS_ACCOUNT_ROLE_ARNS_TO_SEARCH` environment variable to a comma-separated list of role ARNs that the Lambda can assume in order to obtain tags from resources in other accounts.
+To enable the Lambda function to obtain tags from resources in multiple accounts, set the `AWS_ROLE_TO_ASSUME` environment variable to the role that the Lambda will assume on each account.
+Set the `AWS_ACCOUNTS_TO_SEARCH` to a comma-separated list of account numbers that the Lambda will use to fetch all tagged resources.
 
 example:
 ```
-AWS_ACCOUNT_ROLE_ARNS_TO_SEARCH=arn:aws:iam::123456789000:role/FirehoseLambdaMetricsTaggerReadTagsAccessRole,arn:aws:iam::987654321000:role/FirehoseLambdaMetricsTaggerReadTagsAccessRole
+AWS_ROLE_TO_ASSUME=FirehoseLambdaMetricsTaggerReadTagsAccessRole
+AWS_ACCOUNTS_TO_SEARCH=123456789000,987654321000
 ```
 
 The Lambda will begin by trying to obtain tags from the current account (the monitoring account) using its own execution role.
-The Lambda will then try to assume each role in the `AWS_ACCOUNT_ROLE_ARNS_TO_SEARCH` list and fetch the resource tags.
+The Lambda will then try to assume each role in the `AWS_ROLE_TO_ASSUME` list and fetch the resource tags.
 
 The permissions needed for the Lambda's execution role to assume roles in other accounts are as follows.
 On the monitoring account (the account where the Lambda is running), make sure the Lambda's execution role has permissions to assume the roles in other accounts.
