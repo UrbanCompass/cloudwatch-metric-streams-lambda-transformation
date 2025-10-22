@@ -87,6 +87,8 @@ type CloudWatchMetricData struct {
 	allAttributes            map[string]string
 	yaceMetric               *model.Metric
 	awsAccount               string
+	startTimeUnixNano        uint64
+	timeUnixNano             uint64
 }
 
 func newCloudWatchMetricData() *CloudWatchMetricData {
@@ -104,7 +106,9 @@ func (c *CloudWatchMetricData) AsSlice() []interface{} {
 	output = append(output,
 		"aws_account", c.awsAccount,
 		"namespace", c.yaceMetric.Namespace,
-		"metric", c.yaceMetric.MetricName)
+		"metric", c.yaceMetric.MetricName,
+		"timestamp", c.timeUnixNano,
+		"timestamp_start", c.startTimeUnixNano)
 	if c.streamResourceAttributes != nil {
 		for key, val := range c.streamResourceAttributes {
 			output = append(output, "stream/"+key, val)
@@ -524,6 +528,8 @@ func (e *RecordEnhancer) enhanceRecordData(
 							cwmd.SetMetricAttributes(dp.Attributes)
 							cwmd.SetStreamResourceAttributes(streamResourceAttributes)
 							cwmd.awsAccount = awsAccount
+							cwmd.timeUnixNano = dp.TimeUnixNano
+							cwmd.startTimeUnixNano = dp.StartTimeUnixNano
 
 							cwm := cwmd.yaceMetric
 							e.logger.Debug("Processing metric", "metric", cwm.MetricName, "timestamp", dp.TimeUnixNano, "staleness", time.Since(time.Unix(0, int64(dp.TimeUnixNano))))
